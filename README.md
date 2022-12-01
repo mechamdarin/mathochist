@@ -1,1 +1,1 @@
-There aer words here
+There are words here
