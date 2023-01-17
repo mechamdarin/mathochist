@@ -16,7 +16,6 @@ Biostatistics student
 
 ## Related Experience
 
-### Internships
 
 
 ### Data Science Consulting Team
@@ -24,14 +23,19 @@ Biostatistics student
 
 ## Service and Work History
 
+`2015-2018`
+__Assistant Manager__, Orpheum Theatre, Conrad, Montana
+
+`2018-2022`
+__General Laborer / Assistant Accounts Manager__, United Grain Corporation, Conrad, Montana
+
 `2020-2022`
-__Math Tutor__, BYU-Idaho
+__Math Tutor / Supervisor__, BYU-Idaho, Rexburg, Idaho
+
+`2022-2022`
+__Classroom TA__, BYU-Idaho, Rexburg, Idaho
 
 
 
-
-<!-- ### Footer
-
-Last updated: May 2013 -->
 
 
