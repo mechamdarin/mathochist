@@ -3,8 +3,13 @@ title: "Case Study 4 SP/RM [1,1]"
 output: 
   html_document:
     theme: cerulean
+    keep_md: true
+    toc: true
+    toc_float: true
     code_folding: hide
 ---
+
+
 ```{r, include = FALSE}
 library(readr)
 library(pander)

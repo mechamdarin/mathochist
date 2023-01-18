@@ -3,9 +3,11 @@ title: "Rent"
 output: 
   html_document:
     theme: cosmo
-    code_folding: hide
+    keep_md: true
     toc: true
     toc_float: true
+    code_folding: hide
+
 ---
 
 **Week 1 Analysis**

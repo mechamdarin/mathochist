@@ -3,6 +3,9 @@ title: "Day Care Fines"
 output: 
   html_document:
     theme: cerulean
+    keep_md: true
+    toc: true
+    toc_float: true
     code_folding: hide
 ---
 

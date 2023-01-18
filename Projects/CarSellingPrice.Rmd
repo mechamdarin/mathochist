@@ -3,9 +3,10 @@ title: "Car Selling Price Analysis"
 output: 
   html_document:
     theme: journal
+    keep_md: true
+    toc: true
+    toc_float: true
     code_folding: hide
-
-    
 ---
 ```{r, include = FALSE}
 library(mosaic)

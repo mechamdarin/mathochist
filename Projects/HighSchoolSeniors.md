@@ -1,0 +1,138 @@
+---
+title: "High School Seniors t Test"
+output: 
+  html_document:
+    theme: cerulean
+    keep_md: true
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+
+```r
+library(tidyverse)
+library(DT)
+library(pander)
+library(readr)
+library(car)
+HSS <- read_csv("Data/HighSchoolSeniors.csv")
+#Remember: select "Session, Set Working Directory, To Source File Location", and then play this R-chunk into your console to read the HSS data into R.
+
+
+HSS <- HSS %>% 
+  mutate(Sleep_Hours_Schoolnight = as.numeric(Sleep_Hours_Schoolnight))
+HSSleep <- HSS %>% 
+  filter(!is.na(Sleep_Hours_Schoolnight))
+HSSleep <- filter(HSSleep, Gender %in% c("Male", "Female"))
+```
+
+<!-- Instructions
+
+1. Use the HSS dataset in R to come up with a question that can be answered with a t Test. 
+
+Here is a link to the survey given to the students that participated in the study:
+https://ww2.amstat.org/censusatschool/pdfs/C@SQuestionnaire.pdf
+(Use the link to learn about what each column of data in the data set represents.)
+
+2. Establish why your question is interesting and rephrase the question using a statistical "null" and "alternative" hypothesis. (Hint, see the "Math 325 Notebook -> R Help -> R-Markdown Hints" page of your textbook for instructions on how to write mathematical hypotheses.)
+
+3. Clearly answer your question using statistics. Be sure to compute a p-value and provide supporting numerical and graphical summaries.
+
+Note: you can create "groups" from the data in many ways. For example, suppose you wanted to create a variable that grouped people according to whether they thought recycling was more important than conserving water. You could do this by:
+
+
+```r
+HSS <- HSS %>%
+  mutate(recycling_than_water = ifelse(Importance_recycling_rubbish >	Importance_conserving_water, "Recycling More Important", "Water Conservation More Important"))
+```
+
+-->
+<!----- <div style = "color:DarkOrange;" > ----->
+## Background
+
+The following test was conducted using information collected from high school students via a survey. For more information about this survey, please visit the link provided below
+
+[Survey Information](https://ww2.amstat.org/censusatschool/pdfs/C@SQuestionnaire.pdf)
+
+The information that will be looked at will be the hours of sleep that students get on a school night.
+
+## Questions/Hypotheses
+
+1. Is there a difference in the average number of hours slept on a school night for male and female high school seniors?
+
+2. For the purposes of this analysis, $\alpha$ = 0.05.  
+
+Note: The sample sizes are large enough that they should reflect an approximately normal distribution. Thus, no QQ plot is shown later in this study. 
+$$
+H_0: \mu_\text{Females} = \mu_\text{Males}
+$$
+$$
+H_a: \mu_\text{Females} \neq \mu_\text{Males}
+$$
+
+## Analysis and Graphics
+
+Below here, a t test will be run and the results will be displayed. In order to visualize the situation better, a boxplot of the data will be displayed as well as a number summary that provides a bit more context than the boxplot.
+
+Note: The "sleep" is only on school nights.
+
+```r
+pander(t.test(Sleep_Hours_Schoolnight ~ Gender, data = HSSleep, mu = 0, alternative = "two.sided", conf.level = 0.95))
+```
+
+
+-----------------------------------------------------------
+ Test statistic    df     P value   Alternative hypothesis 
+---------------- ------- --------- ------------------------
+     0.4969       452.6   0.6195          two.sided        
+-----------------------------------------------------------
+
+Table: Welch Two Sample t-test: `Sleep_Hours_Schoolnight` by `Gender` (continued below)
+
+ 
+-------------------------------------------
+ mean in group Female   mean in group Male 
+---------------------- --------------------
+        6.608                 6.548        
+-------------------------------------------
+
+```r
+palette(c("lightpink", "lightblue"))
+boxplot(Sleep_Hours_Schoolnight ~ Gender, col = palette(), data = HSSleep, ylab = "Number of Hours (of Sleep)", xlab = "Gender of Students", main = "High School Senior Hours of Sleep Comparison")
+```
+
+![](HighSchoolSeniors_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
+```r
+HSSleep %>% 
+  group_by(Gender) %>% 
+  summarise(Min= min(Sleep_Hours_Schoolnight), Q1 = quantile(Sleep_Hours_Schoolnight, 0.25), Med = median(Sleep_Hours_Schoolnight), Q3 = quantile(Sleep_Hours_Schoolnight, 0.75), Max = max(Sleep_Hours_Schoolnight), Average = mean(Sleep_Hours_Schoolnight), Sample_Size = n( )) %>% 
+  pander(caption = "Numerical Summary of Sleep")
+```
+
+
+-------------------------------------------------------------
+ Gender   Min   Q1   Med   Q3    Max   Average   Sample_Size 
+-------- ----- ---- ----- ----- ----- --------- -------------
+ Female    3    6     7    7.5   10     6.608        237     
+
+  Male     2    6     7     7    10     6.548        219     
+-------------------------------------------------------------
+
+Table: Numerical Summary of Sleep
+
+
+```r
+qqPlot(Sleep_Hours_Schoolnight ~ Gender, data = HSSleep)
+```
+
+![](HighSchoolSeniors_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+
+
+## Conclusion
+
+At the 0.05 significance level, there is insufficient evidence to conclude that there is a difference between the mean number of hours of sleep that male and female students obtain on a school night. This study could be considered reliable if the sample size is the only thing that is examined; however, this is survey data where a lot of values had to be filtered out. The QQ-Plot is not the greatest looking thing, but since the sample size is quite large (237 for the female students and 219 for the male students), the requirements of the test could be considered as satisfied (despite the skew that exists in the data). The conclusion of the study can be solidified by looking at the various summaries above. The averages, according to this data set, are **6.608** for Females and **6.548** for Males (both numbers are measured in hours of sleep on a school night). They are not that far apart (approximately 0.06 hours of difference). Thus, the conclusion doesn't seem that far-fetched. Conclusion: according to this dataset, there appears to not be a difference between the mean number of hours of sleep obtained by female and male students on school nights.  
+<!----- </div> ----->
+

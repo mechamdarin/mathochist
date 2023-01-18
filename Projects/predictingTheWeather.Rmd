@@ -3,9 +3,10 @@ title: "Predicting the Weather"
 output: 
   html_document:
     theme: cosmo
+    keep_md: true
+    toc: true
+    toc_float: true
     code_folding: hide
-    toc: TRUE
-    toc_float: TRUE
 ---
 
 ```{r, include = FALSE}

@@ -3,9 +3,10 @@ title: "Simple Linear Regression"
 output: 
   html_document:
     theme: cosmo
+    keep_md: true
+    toc: true
+    toc_float: true
     code_folding: hide
-    toc: TRUE
-    toc_float: TRUE
 ---
 
 ```{r, message=FALSE, warning=FALSE}
