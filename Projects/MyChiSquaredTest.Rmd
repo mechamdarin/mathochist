@@ -1,0 +1,123 @@
+---
+title: "Chi Squared Test"
+output: 
+  html_document:
+    theme: cerulean
+    code_folding: hide
+---
+
+
+<!-- Directions
+
+Come up with a chi squared test analysis of your own creation. 
+
+* Write the Background and clearly state your question. Then collect data and perform the linear regression analysis in order to answer your question. Use the proper order of first, ask the question, then second, figure out the answer.
+
+* You can use data from 
+    - An R data set
+    - the internet (like weather data, Facebook data, or sports data) 
+    - your own experiment 
+    - your own observational study
+* However,     
+    - Do not violate the "Human Subjects Rules" of the university: http://www.byui.edu/executive-strategy-and-planning/institutional-research/research-and-assessments/research-and-surveys
+
+* You need a sample size large enough to meet the requirements of the chi squared test. Unfortunately, the sample size is completely dependent on the situation you select. A good rule of thumb is 10 observations per "combination-group" in your data.
+
+-->
+
+```{r, include=FALSE}
+library(mosaic)
+library(ResourceSelection) 
+library(car)
+library(readr)
+library(tidyverse)
+library(DT)
+library(pander)
+library(gplots)
+GSS2012 <- read_delim("Data/GSS2012.csv", 
+    "\t", escape_double = FALSE, trim_ws = TRUE)
+```
+
+## Background
+
+Children are a very crucial part of existence in society. They are indeed the future of our society. As nice as they are to have, they can be rather burdensome. Often, people will take off work to have children or to care for them. I personally fully support this idea of paid leave. However, we're not talking about me here. I will be using the General Social Survey data to see if the age group that someone is in is independent of their opinion on paid leave, or not. The data can be found at this website [GSS Data](https://sda.berkeley.edu/sdaweb/analysis/?dataset=gss12). The questions from this dataset that I am concerned with are below:
+
+* Respondent's age
+
+* Do you think there should be paid leave available and, if so, for how long?
+
+Because I do not have access to the amount of months the survey participants entered, I will be focusing on a rather binary idea of yes/no.
+
+### Data Explanation
+
+I mentioned earlier that the age is in groups. Those groups are as follows:
+
+* College Age - These are ages 18-25 or when a lot of people are attending college
+
+* Working Age - These are ages 26-65 or when a lot of people are in what is called "the workforce"
+
+* Post Retirement - These are ages 66-89+. This assumes a universal retirement age of 65.
+
+For the purposes of simplicity and clarity, I filtered down the data so that the paid leave section only had two possible answers.
+
+* YES - they do support paid leave
+
+* NO - they do not support paid leave
+
+## Hypothesis 
+
+$$
+H_0: \text{Age Group and opinions on paid leave (for childcare) are independent of one another.}
+$$
+$$
+H_a: \text{Age Group and opinions on paid leave (for childcare) are associated with one another.}
+$$
+
+
+The significance level that I will be using for this analysis is **0.05**.
+
+## Test
+
+```{r, message = FALSE, message = FALSE}
+GSSAge <- GSS2012 %>%
+mutate(AgeGroup = case_when(age %in% 18:25 ~ "College Age", age %in% 26:65 ~ "Working Age", age %in% 66:89 ~ "Post Retirement"))
+GSSLeave <- GSSAge %>%
+filter(PAIDLV == 1 | PAIDLV == 2)
+GSSLeave <- GSSLeave %>% 
+  mutate(Response = case_when(PAIDLV == 1 ~ "YES", PAIDLV == 2 ~ "NO"))
+MySquared <- table(GSSLeave$AgeGroup, GSSLeave$Response)
+MySquaredResults <- chisq.test(MySquared)
+pander(chisq.test(MySquared), caption = "Chi-Squared Test Results")
+```
+
+### Validity
+
+```{r}
+pander(MySquaredResults$expected, caption = "Expected counts are all greater than 5")
+```
+
+
+### Residuals
+
+```{r, message = FALSE, warning = FALSE}
+pander(MySquaredResults$residuals, caption = "Pearson Residuals for Chi-Squared Test")
+```
+
+By looking at these residual values, I am able to conclude which age group is "to blame" for the results of the test that was conducted. It appears that those of the Post Retirement age group that don't agree with paid leave are partly to blame for these results. I reached this result by looking at the value of residuals. The larger value for the residual (**4.746**) means that more people of this age group did not agree with paid leave than was expected. Another possible suspect is those of the college age group who had the lowest value for their residual. It is not as extreme as the other residual discussed. It stands at a **-2.843** which means that fewer people of the college age group did not agree with paid leave than expected. Other than those two, there aren't really any more that are worth discussing. Well, for the post retirement age group, there is a *similar* value to that of the "College Age: No" category; however, it is not quite as extreme. 
+
+## Barplot
+
+```{r, message = FALSE, warning = FALSE}
+
+palette(c("firebrick", "orangered", "royalblue"))
+barplot(MySquared, beside = TRUE, legend.text = TRUE, col = palette(), xlab = "Opinion on Paid Leave", ylab = "Number of Respondants", main = "Opinions on Paid Leave for Varying Age Groups", args.legend = list(x = "topleft"))
+pander(MySquared, caption = "Observed Counts of Opinions of Age Group")
+```
+
+
+
+## Conclusion
+
+At the 0.05 significance level, the results of the Chi-Squared Test conducted are statistically significant. This means that there is sufficient evidence to reject the null hypothesis. This test declares that Age group and opinion on paid leave are associated in one way or another. These results are statistically valid because all of the expected counts are greater than 5. It seems that there is a link between the age group a person is in and their opinion on paid leave for childcare. Based on the residuals, it seems that the College Age group and the Post Retirement age group are opposites when it comes to their opinions of paid leave for childcare and the Working Age folks are going either direction. We see that there are more people than expected in the Post Retirement / No category and that there are less people than expected in the College Age / No category. In a way, this makes sense. The younger generations tend to have a more "radical" view than that of their elders. This idea can be supported with historical evidence. In some of the most revolutionary times (culturally), it was usually the younger folks leading the charge. The people in the Post Retirement age group tend to be more set in their ways. If this study were to be conducted 40 years from now, we would probably see different results because the age groups would have changed around. Considering their association, it would be reasonable to say that the opinion would shift with the age group. 
+
+

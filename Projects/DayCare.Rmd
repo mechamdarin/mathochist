@@ -1,0 +1,235 @@
+---
+title: "Day Care Fines"
+output: 
+  html_document:
+    theme: cerulean
+    code_folding: hide
+---
+
+<script type="text/javascript">
+ function showhide(id) {
+    var e = document.getElementById(id);
+    e.style.display = (e.style.display == 'block') ? 'none' : 'block';
+ }
+</script>
+
+```{r, include=FALSE}
+library(mosaic)
+library(DT)
+library(pander)
+library(car)
+library(readr)
+library(tidyverse)
+
+# To get the "late" dataset into your R Console, 
+# you need to go to your file menu of R-Studio and select
+# "Session, Set working directory, To source file location"
+# Then click the green "play" arrow in 
+# the top right corner of this gray R-Chunk. 
+late <- read.csv("Data/late.csv", header=TRUE)
+# Then type:
+# > View(late)
+# in your R Console
+```
+
+
+
+----
+
+<!--If you want to give your critiquers some ideas about what you have questions on and would like help with, place those details here.-->
+
+**Comments to Critiquers:** 
+
+In the analysis below, the term "WeekGroup" is used. This refers to the original study where there are three distinct groups of weeks.
+
+* The first group is the weeks 1-4 and has been labeled as the "Control" group.
+
+* The second group is the weeks 5-16 and has been labeled as the "Treatment" group.
+
+* The third group is the weeks 17-20 and has been labeled as the "Post Fine Removal" group.
+
+<!--End your comments to your critiquers before this line.-->
+
+----
+
+
+## Background {.tabset .tabset-fade}
+
+### Overview
+<!-- Be sure to add your own background here before beginning the Analysis. -->
+
+
+
+
+
+
+
+<!--End your background before here.-->
+<!--Click the little black arrow to 
+the left to expand/hide these next sections.-->
+### Study Details
+
+<div style="color:#a8a8a8;">
+This background is quoted directly from the article ["A Fine is a Price"](http://rady.ucsd.edu/faculty/directory/gneezy/pub/docs/fine.pdf). 
+</div>
+
+<div style="padding-left:30px; padding-right:30px;">
+
+There are two types of day-care centers in Israel: private and public. A study was conducted in 10 private day-care centers in the city of Haifa from January to June 1998. All of these centers are located in the same part of town, and there is no important difference among them. During the day children are organized into groups according to age, from 1 to 4 years old. Each day-care center is allowed to hold a maximum of 35 children. In some exceptional cases a few additional children are allowed. The fee for each child is NIS 1,400 per month. (The NIS is the New Israeli Shekel.) At the time of the study, a U.S. dollar was worth approximately NIS 3.68, so the fee was about $380 at that time. 
+
+The contract signed at the beginning of the year states that the day-care
+center operates between 0730 and 1600. There is no mention of what happens if parents come late to pick up their children. In particular, before the beginning of the study, there was no fine for coming late. When parents did not come on time, one of the teachers had to wait with the children concerned. Teachers would rotate in this task, which is considered part of the job of a teacher, a fact that is clearly explained when a teacher is hired. Parents rarely came after 1630. 
+
+A natural option [to fix the problem of parents showing up late] is to introduce a fine: every time a parent comes late, [they] will have to pay a fine. Will that reduce the number of parents who come late? If the fine is removed, will things revert back to the way they were originally?
+
+The overall period of the study was 20 weeks. In the first 4 weeks we
+simply recorded the number of parents who arrived late each week. At the
+beginning of the fifth week, we introduced a fine in six of the 10 day-care centers, which had been selected randomly. The announcement of the fine was made with a note posted on the bulletin board of the day-care center. Parents tend to look at this board every day, since important announcements are posted there. The announcement specified that the fine would be NIS 10 for a delay of 10 minutes or more. The fine was per child; thus, if parents had two children in the center and they came late, they had to pay NIS 20. Payment was made to the principal of the day-care center at the end of the month. Since monthly payments are made to the owner during the year, the fines were added to those amounts. The money was paid to the owner, rather then to the teacher who was staying late (and did not get any additional money). The teachers were informed of the fine but not of the study. Registering the names of parents who came late was a common practice in any case.
+
+At the beginning of the seventeenth week, the fine was removed with no explanation. Notice of the cancellation was posted on the board. If parents asked why the fines were removed, the principals were instructed to reply that the fine had been a trial for a limited time and that the results of this trial were now being evaluated.
+
+A comparison with other fines in Israel may give an idea of the size of
+the penalty that was introduced. A fine of NIS 10 is relatively small but not insignificant. In comparison, the fine for illegal parking is NIS 75; the fine for driving through a red light is NIS 1,000 plus penalties; the fine for not collecting the droppings of a dog is NIS 360. For many of these violations, however, detection and enforcement are low or, as in the case of dog dirt, nonexistent in practice. A baby-sitter earns between NIS 15 and NIS 20 per hour. The average gross salary per month in Israel at the time of the study was NIS 5,595.
+
+</div>
+
+
+### The Data (Wide)
+
+
+The `late` Day Care Center data is shown here in the "wide data format". 
+
+```{r, out.width=300}
+#Show the full width of the "Wide" version of the late data:
+pander(late, split.tables = Inf)
+```
+
+
+### The Data (Long)
+
+The `Late` Day Care Center data is shown here in the "long data format".
+
+```{r}
+# This code reshapes the data into "long" format called Late.
+# To get the "Late" dataset into your R Console, 
+# you need to click the green "play" arrow in 
+# the top right corner of this gray R-Chunk. 
+# Then type:
+#   > View(Late)
+# in your R Console
+Late <- reshape(late,
+                varying = paste("Week",1:20, sep=""), 
+                v.names = "No.ofLateChildren",
+                timevar = "Week", 
+                times = 1:20, 
+                idvar = "Center",
+                new.row.names = 1:200,
+                direction = "long")
+pander(Late)
+```
+
+
+ 
+##  
+<!-- You can begin writing again after here.-->
+
+
+
+## Analysis
+
+The study was conducted in three phases. There was the control phase, the treatment phase, and the "return to normal" phase. The hope is with this test to see if the time had an effect on the number of late children or if the treatment had an effect on the number of late children, or perhaps both!
+
+1. The first question that we must ask if the treatment itself had an effect on the number of late children.
+
+2. Then we ask if the actual week had an effect on the number of late children.
+
+3. We then see if there is any sort of interaction between the week and the treatment.
+
+$$
+H_0: \mu_\text{Control} = \mu_\text{Treatment}
+$$
+$$
+H_a: \mu_\text{Control} \neq \mu_\text{Treatment}
+$$
+
+
+
+
+$$
+H_0: \mu_\text{Control} = \mu_\text{Treatment} = \mu_\text{Post Fine Removal}
+$$
+
+
+
+$$
+H_a: \text{At least one of the means is different}
+$$
+
+
+
+
+$$
+H_0: \text{The effect of the week is the same no matter if there is a treatment or not.}
+$$
+
+
+$$
+H_a: \text{The effect of the week is not the same whether or not there is a treatment.}
+$$
+
+For the purpose of this study, a **0.05** significance level will be used. 
+
+
+```{r, message = FALSE, warning = FALSE}
+LateF <- Late %>% 
+  mutate(WeekF = as.factor(Week))
+
+LateF <- LateF %>% 
+  mutate(WeekGroup = case_when(Week %in% 1:4 ~ "Control", Week %in% 5:16 ~ "Treatment", Week %in% 17:20 ~ "Post Fine"), 
+WeekGroup = factor(WeekGroup, levels=c("Control", "Treatment", "Post Fine"), ordered = TRUE))
+
+Late.aov <- aov(No.ofLateChildren ~ WeekGroup*Treatment, data = LateF)
+pander(summary(Late.aov))
+```
+
+
+## Plots
+
+
+``` {r, message = FALSE, warning = FALSE}
+par(mfrow = c(1, 2))
+plot(Late.aov, which = 1)
+qqPlot(Late.aov$residuals, id = FALSE)
+```
+
+
+
+``` {r, message = FALSE, message = FALSE}
+  xyplot(No.ofLateChildren ~ Treatment, data = LateF, type = c("p", "a"), main = "Significance of Fine", col = "skyblue")
+
+LateF %>% 
+  group_by(Treatment) %>% 
+  summarise("Mean" = mean(No.ofLateChildren)) %>% 
+  pander(caption = "Average number of late children based on presence of treatment")
+
+xyplot(No.ofLateChildren ~ WeekGroup, data = LateF, type = c("p", "a"), main = "Significance of Time Period", col = "skyblue")
+
+LateF %>% 
+  group_by(WeekGroup) %>% 
+  summarise("Mean" = mean(No.ofLateChildren)) %>% 
+  pander(caption = "Average number of late children based on time slot")
+
+xyplot(No.ofLateChildren ~ WeekGroup, data = LateF, groups = Treatment, type = c("p", "a"), main = "Significance of Interaction", auto.key = list(corner = c(1,1)))
+
+LateF %>% 
+  group_by(WeekGroup, Treatment) %>% 
+  summarise("Mean" = mean(No.ofLateChildren)) %>% 
+  spread(Treatment, Mean) %>% 
+  pander(caption = "Average number of late children based on treatment AND time slot")
+```
+
+
+## Conclusion 
+
+Based on the results of this test, there is sufficient evidence to reject all of the null hypotheses. Meaning that there is sufficient evidence to claim the following: the average number of late children (treatment or control) is not equal, at least one of the means out of the three week groups is different than the others, and the effects of the week are not the same whether there is a treatment or not. Judging by the plots above, these conclusions make sense. If the results of the test were not significant, we would see a more horizontal line. Alas, that is not the case here. This test might not be the most reliable considering the state of the diagnostic plots. The residual vs. fitted plot has a vaguely megaphone shape to it which is concerning. The QQ plot of the residuals shows some curvature, but it does stay within the boundary curves so it might just be okay. The conclusions that were mentioned before can be supported by looking at the numerical summaries for each grouping. Those numbers in the summaries are all measured in "late children units." Technically speaking, the following numbers would have to be rounded because it isn't totally possible to have a decimal of a child that happens to be late. In the first table above, the two means for the treatment levels can be seen: **9.188** for the control group and **15.21** for the fine group. In this situation, the means are *very* different. The second conclusion that was made is justified by looking at that second table. Once again, that same idea of *very* different means shows up. The Control time period has a mean of **8.8**, the Post Fine time period has a mean of **14.53** , and the Treatment time period has a mean of **13.56**. Finally, the difference in the effects of the treatment is also quite apparent. The highest mean being in the Post Fine/Fine category **18.71** and the lowest being in the Control/Fine category **8**.       
+

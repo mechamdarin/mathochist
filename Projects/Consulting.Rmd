@@ -1,0 +1,95 @@
+---
+title: "Statistical Consultation"
+output: 
+  html_document:
+    theme: cosmo
+    code_folding: hide
+---
+```{r, include = FALSE}
+library(car)
+library(mosaic)
+library(pander)
+library(tidyverse)
+library(readr)
+library(gplots)
+library(DT)
+wheat <- read_csv("Data/WheatPrices.csv")
+
+```
+
+
+
+# Findings
+
+Based on the cash prices from June 3, 2019 to May 29, 2020, there is sufficient evidence to conclude that the time of year has an effect on wheat price. There is also sufficient evidence to conclude that the commodity has an effect on price. This makes sense considering that Spring wheat almost always has a higher price than that of Winter wheat. Furthermore, there is sufficient evidence to conclude that the interaction of season and commodity have an effect on price. Conclusion: there *is* a best time to sell wheat. According to the data that was examined, the best average prices can be found in Spring for HRW and Winter for DNS. Those prices are **4.96** and **5.47** respectively (both amounts were rounded to the nearest cent). Since the averages for each commodity/time of year combination were calculated, the *worst* time of year to sell could also be identified. For this dataset, the worst time of year to sell was Summer for both commodities. In a way, this makes sense considering the volatility of the market during harvest time. The averages for this time were **4.78** (DNS) and **4.25** (HRW).   
+
+
+
+
+# Graphic
+
+The following graphic will show the various distributions of price based on commodity and season. From this plot, it can be seen that the cash price has the largest range during the summer months for both commodities. Additionally, this plot can show the best times to sell wheat.
+
+
+
+The boxplot showcases a 5 number summary. Five number summaries include the following:
+
+* Minimum - the smallest number of the dataset 
+
+* Quartile 1 - 25% of the data is less than or equal to this point (first edge of the box)
+
+* Median - this is the middle of the dataset if the data were to be put in order (black line in middle)
+
+*50% of the data is less than or equal to the median in most cases*
+
+* Quartile 3 - 75% of the data is less than or equal to this point (second edge of box)
+
+* Maximum - the largest number of the dataset
+
+
+
+
+This plot also has a line drawn across it which shows the overall average of **$4.92**
+
+```{r, message = FALSE, warning = FALSE}
+palette(c("khaki", "goldenrod"))
+boxplot(Price ~ Commodity + Season, data = wheat, col = palette(), xlab = "Season", main = "Price Comparison based on Commodity and Season", xaxt = 'n') 
+axis(1, at=c(1.5, 3.5, 5.5, 7.5), labels=c("Fall", "Spring", "Summer", "Winter"))
+abline(v=c(2.5,4.5,6.5), lty=1, col="gray83")
+abline(h = mean(wheat$Price), lty = 2, col = "gray44")
+legend("topright", legend = c("DNS", "HRW"), bty = "n", pch = 16, col = palette())
+```
+
+
+```{r, message = FALSE, warning = FALSE}
+pander(favstats(Price ~ Commodity + Season, data = wheat)[,-10][,-9])
+```
+
+
+# Data
+```{r, message = FALSE, warning = FALSE}
+datatable(wheat, options = list(lengthMenu = c(3, 10, 30)))
+```
+
+For this dataset:
+
+* Summer - June 21 to September 20 (2019)
+
+* Spring - June 3 to June 20 (2019) and March 19 to May 29 (2020)
+
+* Fall - September 23 to December 20 (2019)
+
+* Winter - December 23 to March 18 (2019-2020)
+
+
+
+
+# Statistical Test
+
+The $\alpha$ level used for this study was **0.05**. Since all of the $p$-values (last column of table) are lower than **0.05**, the conclusions that were made at the beginning of the analysis are supported. 
+
+```{r, message = FALSE, warning = FALSE}
+wheat.aov <- aov(Price ~ Commodity*Season, data = wheat)
+pander(summary(wheat.aov), caption = "Results of Two Way ANOVA Test")
+```
+
