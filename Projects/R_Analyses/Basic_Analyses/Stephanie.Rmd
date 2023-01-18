@@ -1,0 +1,104 @@
+---
+title: "Stephanie's Housing Request"
+output:
+  html_document:
+    theme: cerulean
+    code_folding: hide
+    keep_md: true
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+---
+
+**Week 2 Analysis**
+
+```{r, include=FALSE}
+library(mosaic)
+library(tidyverse)
+library(pander)
+library(DT) # If you get an error stating: 
+            # Error in library(DT): there is no package called 'DT'
+            # You will need to run: install.packages("DT") 
+            # in your Console, then try "Knit HTML" again.
+library(plotly)
+Rent <- read_csv("../../Data/Rent.csv")
+```
+
+
+<br />
+
+## Background
+
+Stephanie[^1] is a student that will be starting school at BYU-Idaho next semester. Suppose she sent you the following email.
+
+----
+
+"Hi. My name is Stephanie. I would like to learn about what housing options I have for living at BYU-Idaho next semester. It will be my first semester there, so I would like to find something that is close to campus and around $300 a month in rent. I'm not too picky on roomates, but I would like somewhere that has a lot of people around so I can get to know as many people as possible. Thanks in advance!"
+
+----
+<!-- 
+Write your response to Stephanie below. Use the "Rent" dataset, good statistical analysis, and clear writing to make some well supported suggestions to her about apartments that meet her stated criterions. You are free to use other criterion that you think she might find more meaningful as well.
+
+-->
+## Response
+
+Dear Stephanie,
+
+  Because of the nature of your request (around 300 a month for rent, close to campus, lots of people around, indifferent to roommates), I went ahead and narrowed down the dataset so that it is more convenient for you. I have eliminated those complexes that have not listed a price because that was one of the values that you wanted. I have also listed a monthly price (obtained by dividing the semester price by four). I did this because it is what most complexes do. I'm not sure if that is the case across the board though. Included in this response, you will find a plot that compares the price per month to the approximate amount of time that it takes to get to campus. In this graphic, the larger the dot, the more people there are within the complex. 
+ 
+  Hopefully, this answers all of the questions that you may have. I left in the phone numbers for each complex so that you may contact them with any questions that this analysis does not answer. 
+  
+If it were up to me, I would go with Birch Plaza because it is pretty cheap (relatively speaking) and it is very close to campus. Another perk to Birch Plaza is that it has a lot of residents to socialize with. I also recommend Royal Crest because it has similar values to Birch Plaza. For your convenience, I have listed the data for those two at the bottom of this response. If you don't like those, feel free to use the graphic that I have put in for your use. The further you go to the right, the more expensive the apartment will be. The further up you go, the further that apartment complex is from campus. 
+
+The following links will take you to the websites of the complexes that I recommended. 
+
+[Birch Plaza](https://rexburghousing.com/birch-plaza/)
+
+[Royal Crest](http://royalcrestapartments.com/)
+ 
+Sincerely, 
+
+Me
+
+PS: If you hover over the dots of the plot, it will give you the information that you want for each complex.
+
+
+
+<!-- Hint, you should probably subset the Rent dataset to only show the "Approved Women's Housing" since Stephanie won't be interested in Male Housing options. Notice how this text in green doesn't show up in the HTML output because we used the HTML comment tags around this text. --> 
+
+```{r}
+# Code to get you started, be sure to use a subset of Rent instead of Rent in this code though.
+Rentw <- Rent %>%
+filter(Gender == "F")
+Rentw <- filter(Rentw, !is.na(Price))
+Rentw <- Rentw %>% 
+  mutate(MonthlyPrice = Price / 4)
+Rentw <- Rentw %>% 
+  filter(MonthlyPrice <= 300)
+Rentw <- select(Rentw, c(Apartment, MonthlyPrice, WalkingMinutes, Capacity, Phone, MilesToCampus, Price, Website, Description))
+datatable(Rentw, options = list(lengthMenu = c(5,10,30)), extensions = "Responsive")
+
+```
+
+
+```{r, warning = FALSE, message = FALSE}
+plot_ly(Rentw, x = ~MonthlyPrice, y = ~WalkingMinutes, size = ~Capacity, color = ~Capacity, text = ~paste("Apartment:", Apartment, "\n", "Price per month: $", MonthlyPrice, "\n", "Number of Residents:", Capacity)) %>% layout(title = "Single Female Student Apartment Complexes in Rexburg (under $300 per month only)", xaxis= list(title = "Monthly Price of the Apartment"), yaxis = list(title = "How far it is to campus (in minutes)"))
+
+```
+
+
+```{r}
+RentRecommend <- filter(Rentw, Capacity %in% c(342, 343))
+datatable(RentRecommend, options = list(lengthMenu = c(3, 10, 30)), extensions = "Responsive")
+```
+
+
+
+
+
+
+
+
+
+[^1]: Note that Stephanie is a fictional character who is based on real experiences of many faculty and staff at BYU-Idaho.

@@ -1,0 +1,118 @@
+---
+title: "Car Selling Price Analysis"
+output: 
+  html_document:
+    theme: journal
+    keep_md: true
+    toc: true
+    toc_float: true
+    code_folding: hide
+
+---
+```{r, include = FALSE}
+library(mosaic)
+library(car)
+library(readr)
+library(tidyverse)
+library(DT)
+library(pander)
+library(gplots)
+
+sellingPrices <- read_csv("../../Data/sellingPrices.csv")
+sell.lm <- lm(Price ~ Mileage, data = sellingPrices)
+sell.sqrt <- lm(sqrt(Price) ~ Mileage, data = sellingPrices)
+ss <- coef(sell.sqrt)
+```
+
+# Introduction
+
+I grew up on a ranch in a small town. Thanks to my quick learning and necessity, I have learned how to drive many different vehicles. Oftentimes, if my parents needed to borrow the car that I would frequently drive, I would basically take anything that could run to school. So, it was a pretty big deal when I got my own car! My first car was a 2006 maroon Chevy Malibu. I had that car for the latter half of my high school career and my first semesters here at BYU-I. After the Spring semester, I went back home to work. One day, my mom borrowed my car so that she could go to a stake meeting. On her way back home, she ended up hitting a deer (she was not injured for the record). Unfortunately, there were two casualties that night. The car was totaled and scrapped. Prior to returning for another semester, my dad and I went car shopping. We ended up getting another Chevy Malibu. This one was from 2012 and it was black. This car is getting older and I need to start looking for a new one. The Chevy Malibu has become one of my favorite make/model combinations out there. Therefore, I collected data on Chevy Malibus that are either older than my current car or *much* younger. I didn't specify the trim, build, or anything like that because I'm rather indifferent when it comes to those characteristics. I did collect the color because that would make a difference in my decision. 
+
+
+
+
+## Bargain Brand CarFax {.tabset .tabset-pills .tabset-fade}
+
+
+
+
+### Plotting to Buy a Car?
+
+```{r, message = FALSE, warning = FALSE}
+palette(c("red4", "black"))
+plot(Price ~ Mileage, data = sellingPrices, col = "navyblue", pch = 20, main = "Price of Chevy Mailbu (2010-2022) According to Mileage", xlab = "Mileage of Car", ylab = "Price of Car")
+abline(sell.lm, col = "red4")
+curve((ss[1] + ss[2]*x)^2, col = "black", add = TRUE)
+points(120000, 8693.492, pch = 16, col = "green", cex = 2)
+points(147658, 6187.378, pch = 16, col = "green", cex = 2)
+text(120000, 8693.492, "Initial Mileage", pos = 2, cex = 0.75)
+text(147658, 6187.378, "Current Mileage", pos = 2, cex = 0.75)
+segments(120000, 8693.492, 147658, 6187.378, col = "hotpink", lwd = 5)
+text(133829, 7440.435, "Change in Price of My Car", pos = 2, cex = 0.75)
+legend("bottomleft", col = palette(), lty = 1, legend =c( "Linear Regression", "Transformed Regression (Square Root)"), bty = "n") 
+```
+
+
+
+$$
+\hat{Y_i} = 23773 - 0.1264X_i
+$$
+$$
+\hat{Y_i}\prime = \sqrt{\hat{Y_i}}
+$$
+$$
+\hat{Y_i}\prime = \sqrt{156.50 - 0.0005271X_i}
+$$
+$$
+\hat{Y_i} = (156.50 - 0.0005271 X_i)^2
+$$
+
+According to my transformed regression curve, in the time that I've had it, my car has lost a little over 2500 dollars in value. That results in an average of 1250 dollars per year/per 10,000 miles. It has served me well, so it is definitely worth it. The regression did predict the initial value of my car to be about 8700 dollars. Then again, this is based off of Idaho and Utah prices. Apparently, purchasing my car outside of these two states was wise because I got the car for around 6800 dollars which is not that far off of the value that my car currently has. 
+
+
+Based off of what I have seen in both the data collection and the regression, I don't think a new car is really worth it. Sure, it would be more reliable and be really cool, but I am a college student. Right now in my life, I can't afford a car loan. Perhaps consistently putting value back into the car would help offset the depreciation. The graph makes it look more extreme than it actually is. One can hope... One can dream...
+
+
+ 
+
+### Mechanics Behind the Math
+
+```{r, message = FALSE, warning = FALSE}
+pander(summary(sell.lm), caption = "Simple Linear Regression Results")
+par(mfrow = c(1,3))
+plot(sell.lm, which = 1)
+qqPlot(sell.lm$residuals, id = FALSE)
+plot(sell.lm$residuals)
+```
+
+There have definitely been better diagnostic plots out there. The Residuals vs. Fitted plot shows concerns on both fronts. There is some definite bend in that line and there appears to be an inconsistent variance. Both of these could be attributed to the outliers that are present within the data. The QQ-Plot isn't much better. It suggests that this data is heavy tailed. The only one that *might* be acceptable is the Residuals vs. Order plot. Then again, there is a sort of megaphone shape to this one as well. Hopefully, the transformed plots have something better to offer. 
+
+```{r, message = FALSE, warning = FALSE}
+boxCox(sell.lm)
+```
+
+This test shows that a $\lambda$ value of about **0.5** would be all right for this transformation. In other words, a square root transformation. 
+
+```{r, message = FALSE, warning = FALSE}
+pander(summary(sell.sqrt), caption = "Transformed Regression Results")
+par(mfrow = c(1,3))
+plot(sell.sqrt, which = 1)
+qqPlot(sell.sqrt$residuals, id = FALSE)
+plot(sell.sqrt$residuals, main = "Residuals vs. Order Plot")
+```
+
+The transformation appears to have changed the plots, so that's good! Unfortunately, it appears that not everything was changed for the better. The Residuals vs. Fitted plot looks much better than the initial one. Not as much concern regarding linearity and the constant variance doesn't appear to be as much of an issue. The QQ-Plot was one of the casualties sustained with the transformation. The transformation appears to have exaggerated the heavy-tailed aspect that was observed in the initial plot. The Residuals vs. Order plot maintained its vague trend. Of course, this *could* attributed to the connected aspect of the data (it's the same make/model).  
+
+
+ 
+
+### A More Convenient, But Less Informative Car Catalog
+
+
+
+
+```{r, warning = FALSE, message = FALSE}
+datatable(sellingPrices, options=list(lengthMenu = c(5,10,30)), extensions="Responsive")
+```
+
+This data was collected from KSL.com on Thursday, May 6th. This is also the day that I recorded my mileage on my car. The initial mileage was not exact, merely estimated. The Chevy Malibus ranged from 2010 to 2022 and mileages from 0 to 300,000. If you want to see the specifics, see here: [KSL Car Site](https://cars.ksl.com/search/make/Chevrolet/model/Malibu/yearFrom/2010/yearTo/2022/mileageFrom/0/mileageTo/300000/newUsed/Used;Certified;New/numberDoors/4)

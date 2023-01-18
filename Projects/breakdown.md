@@ -20,4 +20,4 @@ There are certainly some times when my "professional statistical language" is a 
 
 # What's in here?
 
-As I mentioned earlier, this directory contains files from my time during my undergrad at BYU-I. As such, you will find some of my work pertaining to basic statistics tests (t-tests, One-Way ANOVA, etc.) as well as experiments of my own design. 
+As I mentioned earlier, this directory contains files from my time during my undergrad at BYU-I. As such, you will find some of my work pertaining to basic statistics tests (t-tests, One-Way ANOVA, etc.) as well as experiments of my own design. I'd like to say that these are decently organized... Some Python stuff to come soon!

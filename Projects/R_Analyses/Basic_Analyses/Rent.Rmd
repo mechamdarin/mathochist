@@ -1,0 +1,104 @@
+---
+title: "Rent"
+output: 
+  html_document:
+    theme: cosmo
+    keep_md: true
+    toc: true
+    toc_float: true
+    code_folding: hide
+
+---
+
+**Week 1 Analysis**
+
+```{r, include=FALSE}
+library(mosaic)
+library(pander)
+library(tidyverse)
+library(DT) 
+Rent <- read_csv("../../Data/Rent.csv")
+```
+
+<br />
+
+## Background
+
+Here is a data table showing the available approved housing apartment options at BYU-Idaho for single students. There are 122 entries comprising 57 female and 65 male apartment options.
+<!-----
+<div style = "color:DodgerBlue;">
+Disclaimer: All analysis-relevant text will be in this color. 
+Additional  
+</div>
+----->
+
+This analysis is designed to find out the answer to the following question: Is there a difference in the rent price (Contract cost for one semester) for males and females?
+
+
+
+Disclaimer: All complexes that don't list a value for their price have been eliminated from the dataset as they are not applicable to the matter at hand.
+
+
+```{r, warning=FALSE}
+# Code to get you started. 
+# View(...) works great in the Console, but datatable(...) must be
+# used instead within an R-chunk.
+RentGenderPrice <- select(Rent,  c(Apartment, Gender, Price))
+RentGenderPrice <- filter(RentGenderPrice, !is.na(Price))
+
+datatable(RentGenderPrice, options=list(lengthMenu = c(3,10,30)), extensions="Responsive")
+```
+
+
+## Graphic
+
+<!-- Present an interesting graphic using the Rent data set. Do not create the same graphics that are shown in the [Good Example Analysis](./Analyses/StudentHousing.html), but you can certainly use those graphics as a guide to inspire you on what to do yourself. -->
+
+
+```{r}
+# Use this R-chunk to...
+# ...Create an interesting graphic using the Rent data set.
+ 
+
+
+boxplot(Price~Gender, RentGenderPrice, xlab= "Gender of Residents", ylab = "Rent Prices", main = "Rent Prices for Different Genders (Contract cost for Semester)", col = "skyblue")
+
+```
+
+
+<!-- Write a few statements here that explain your graphic and what it shows. -->
+<!-- <div style = "color:DodgerBlue; "> -->
+The boxplots for this dataset are very similar. They appear to have median values that are very close to each other. In addition to this, the range is similar. As many similarities as they have, there is still a difference between the two boxplots. It is a pretty subtle difference. 
+<!-- </div> -->
+
+
+```{r}
+# Use this R-chunk to...
+# ...compute and display a meaningful table of numerical summaries supporting your above graphic.
+
+
+RentGenderPrice %>% 
+  group_by(Gender) %>% 
+  summarise(Min = min(Price), Q1 = quantile(Price, 0.25), Median = median(Price), Q3 = quantile(Price, 0.75), Max = max(Price)) %>% 
+  pander(caption = "Five Number Summary - Rent Price Comparison")
+RentGenderPrice %>% 
+  group_by(Gender) %>% 
+  summarise(Mean = mean(Price)) %>% 
+  pander(caption = "Average Rent Price Comparison")
+
+
+
+```
+
+<!-- Write a few statements here that introduce your table of numerical summaries and what they show. -->
+<!-- <div style = "color:DodgerBlue; "> -->
+This numerical summary serves as further evidence that there is just a slight difference between the contract price per semester for males and females. As it can be seen, even the average prices differ only slightly. 
+<!-- </div> -->
+
+
+## Conclusion
+<!-- <div style = "color:DodgerBlue; "> -->
+Based on the information found in these graphics and numerical summary, there isn't that much of a difference in rent price for female and male residents. On the other hand, both the boxplots and the average rent price lead to the assumption that females pay more than males. Further studies could be used to see if there is some sort of discrimination in price based on the gender of the resident. Although, it is not likely that such a study would produce any significant results due to the little difference.
+<!-- </div> -->
+
+
