@@ -5,3 +5,5 @@ _site/
 .DS_Store?
 .Rproj.user
 mdresume.Rproj
+.Rhistory
+side_work/
