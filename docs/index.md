@@ -6,7 +6,7 @@ title: Darin Mecham's Resume
 Biostatistics graduate 
 
 <div id="webaddress">
-| <a href="https://github.com/mechamdarin/mathochist/tree/master/Projects">Projects Repository</a>
+| <a href="https://github.com/mechamdarin/mathochist/">Projects Repository</a>
 | <a href="https://www.linkedin.com/in/darin-mecham/">LinkedIn</a>
 </div>
 
