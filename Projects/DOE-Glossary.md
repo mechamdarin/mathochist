@@ -59,9 +59,9 @@ You are free to add more terms to this glossary and to add bulletlists or subsec
 
 * BF[x] - x is the number of factors of interest (there can be interactions too)
 
-* [Case Study BF[1]](Case-Study-1.html)
+* [Case Study BF[1]](R_Analyses/ANOVA/my_experiments/Case-Study-1.html)
 
-* [Case Study BF[2]](Case-Study-2.html)
+* [Case Study BF[2]](R_Analyses/ANOVA/my_experiments/Case-Study-2.html)
 
 
 **Bias**
@@ -109,7 +109,7 @@ You are free to add more terms to this glossary and to add bulletlists or subsec
 
 * The block is not of as much concern
 
-* [Case Study CB[1]](Case-Study-3.html)
+* [Case Study CB[1]](R_Analyses/ANOVA/my_experiments/Case-Study-3.html)
 
 
 **Comparison / Contrast**  
@@ -454,7 +454,7 @@ You are free to add more terms to this glossary and to add bulletlists or subsec
 
 * R - name.aov <- aov(Response ~ BetweenBlock*WithinBlock + Block, data = TheData, ...)
 
-* [Case Study SP/RM [1, 1]](Case-Study-4.html)
+* [Case Study SP/RM [1, 1]](R_Analyses/ANOVA/my_experiments/Case-Study-4.html)
 
 **Statistic**
 
